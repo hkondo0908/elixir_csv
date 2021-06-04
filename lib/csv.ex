@@ -1,18 +1,21 @@
 defmodule Csv do
-  @moduledoc """
-  Documentation for `Csv`.
-  """
+  def read_csv(filename) do
+    {status,contents}=File.read(filename)
+    case status do
+      :ok -> contents
+      :error -> "ファイル名が不正です。"
+    end
+  end
 
-  @doc """
-  Hello world.
+  def make_list(contents) do
+    keys=
+    String.split(contents,"\r\n")
+    |> Enum.at(0)
+    values=
+    String.split(contents,"\r\n")
+    |> List.delete_at(0)
 
-  ## Examples
-
-      iex> Csv.hello()
-      :world
-
-  """
-  def hello do
-    :world
+    {keys,values}
   end
 end
+
