@@ -12,6 +12,7 @@ defmodule Csv do
     String.split(contents,"\r\n")
     |> Enum.at(0)
     |> String.split(",")
+    |> Enum.with_index()
     values=
     String.split(contents,"\r\n")
     |> List.delete_at(0)
@@ -21,8 +22,10 @@ defmodule Csv do
   end
 
   def make_map(keys,values) do
-    maps = Enum.map(values,&[{Enum.at(keys,0),Enum.at(&1,0)},{Enum.at(keys,1),Enum.at(&1,1)},{Enum.at(keys,2),Enum.at(&1,2)},{Enum.at(keys,3),Enum.at(&1,3)}])
-    Enum.map(maps,&Map.new(&1)) 
+    maps =
+    #Enum.map(values,&[{Enum.at(keys,0),Enum.at(&1,0)},{Enum.at(keys,1),Enum.at(&1,1)},{Enum.at(keys,2),Enum.at(&1,2)},{Enum.at(keys,3),Enum.at(&1,3)}])
+    Enum.map(values,fn y -> Enum.map(keys,fn {x,n}-> {x,Enum.at(y,n)} end) end)
+    Enum.map(maps,&Map.new(&1))
   end
 
   def main do
@@ -32,5 +35,12 @@ defmodule Csv do
 
     make_map(keys,values)
   end
-end
 
+  def simple_CSV do
+    Path.expand("/Users/hitoshi/day4/csv/CUSTOMER.csv")
+    |> File.stream!
+    |> CSV.Decoding.Decoder.decode(headers: true)
+    |> Enum.to_list()
+    |> Keyword.get_values(:ok)
+  end
+end
